@@ -15,10 +15,11 @@ from .sensor_worker import SensorFlowWorker
 
 
 class VirtualIoTDevice:
-    def __init__(self, broker_ip: str, broker_port: int, device_structure: Dict[str, Any]):
+    def __init__(self, broker_ip: str, broker_port: int, device_structure: Dict[str, Any], success_rate: float = 100.0):
         self.broker_ip = broker_ip
         self.broker_port = int(broker_port)
         self.device_structure = device_structure
+        self.success_rate = success_rate 
 
         self.device_id = device_structure["id"]
         self.command_topic = f"dev/{self.device_id}"
@@ -116,6 +117,7 @@ class VirtualIoTDevice:
                 response_topic=self.response_topic,
                 collect_ms=collect_ms,
                 publish_ms=publish_ms,
+                success_rate=self.success_rate,  
             )
             self._flows[sensor_id] = worker
             print(f"[FLOW] created worker sensor='{sensor_id}'")
@@ -126,7 +128,11 @@ class VirtualIoTDevice:
         # Valor float aleatório para simular sensor
         import random
 
-        value = round(random.uniform(0.0, 100.0), 2)
+        if random.uniform(0.0, 100.0) <= self.success_rate:
+            value = round(random.uniform(0.0, 100.0), 2)
+        else:
+            value = -1.0
+
         resp = build_get_response(self.device_id, sensor_id, value)
         self.client.publish(self.response_topic, resp, qos=1)
         print(f"[SEND] topic='{self.response_topic}' payload='{resp}'")

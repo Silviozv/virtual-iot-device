@@ -27,6 +27,8 @@ def main() -> None:
     broker_ip = os.getenv("BROKER_IP", "127.0.0.1")
     broker_port = int(os.getenv("BROKER_PORT", "1883"))
     device_name = os.getenv("DEVICE_NAME") or str(uuid.uuid4())
+    
+    success_rate = float(os.getenv("SUCCESS_RATE", "100.0"))
 
     device_structure = default_device_structure(device_name)
 
@@ -34,6 +36,7 @@ def main() -> None:
         broker_ip=broker_ip,
         broker_port=broker_port,
         device_structure=device_structure,
+        success_rate=success_rate,  
     )
     device.start()
 

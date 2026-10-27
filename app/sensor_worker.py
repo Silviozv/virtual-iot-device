@@ -21,6 +21,7 @@ class SensorFlowWorker:
     publish_ms: int
     value_min: float = 0.0
     value_max: float = 100.0
+    success_rate: float = 100.0
 
     _values: List[float] = field(default_factory=list)
     _lock: threading.Lock = field(default_factory=threading.Lock)
@@ -69,7 +70,11 @@ class SensorFlowWorker:
                 last_publish = now
 
             if now - last_collect >= collect_s:
-                value = round(random.uniform(self.value_min, self.value_max), 2)
+                if random.uniform(0.0, 100.0) <= self.success_rate:
+                    value = round(random.uniform(self.value_min, self.value_max), 2)
+                else:
+                    value = -1.0
+                
                 with self._lock:
                     self._values.append(value)
                     buf_len = len(self._values)
