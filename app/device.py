@@ -39,7 +39,7 @@ class VirtualIoTDevice:
         self.client.connect(self.broker_ip, self.broker_port, keepalive=60)
         self.client.loop_start()
 
-        self._publish_handshake_with_re4ea1e318cc1ctry()
+        self._publish_handshake_with_retry()
 
         try:
             while True:
